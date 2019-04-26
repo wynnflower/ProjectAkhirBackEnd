@@ -4,11 +4,12 @@ var app = express()
 //var mysql = require('mysql')
 var cors = require('cors')
 
+
 app.use(cors())
 app.use(bodyParser.json());
 
-const port = 2000
-const {todoRouter,userRouter,productRouter}=require('./router')
+const port = 4000
+const {todoRouter,userRouter,productRouter,cartRouter,kategoriRouter}=require('./router')
 
 // const db = mysql.createConnection({
 //     host: 'localhost',
@@ -33,7 +34,13 @@ app.get('/', (req, res) => {
 
 //app.use('/todo',todoRouter)
 //app.use('/user',userRouter)
+
+//Untuk membuat folder bisa diakses secara public
+app.use('/uploads',express.static('uploads'))
+
 app.use('/product',productRouter)
+app.use('/cart',cartRouter)
+app.use('/kategori',kategoriRouter)
 //app.use('/user',todoRouter)
 
 // app.get('/nama/:id', (req, res) => {

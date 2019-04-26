@@ -1,9 +1,13 @@
 const todoRouter=require('./todoRouter')
 const userRouter=require('./userRouter')
 const productRouter=require('./productRouter')
+const cartRouter=require('./cartRouter')
+const kategoriRouter=require('./kategoriRouter')
 
 module.exports={
     todoRouter,
     userRouter,
-    productRouter
+    productRouter,
+    cartRouter,
+    kategoriRouter
 }
