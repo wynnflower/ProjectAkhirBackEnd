@@ -9,7 +9,7 @@ app.use(cors())
 app.use(bodyParser.json());
 
 const port = 4000
-const {todoRouter,userRouter,productRouter,cartRouter,kategoriRouter}=require('./router')
+const {todoRouter,userRouter,productRouter,cartRouter,kategoriRouter,transactionRouter}=require('./router')
 
 // const db = mysql.createConnection({
 //     host: 'localhost',
@@ -41,7 +41,8 @@ app.use('/uploads',express.static('uploads'))
 app.use('/product',productRouter)
 app.use('/cart',cartRouter)
 app.use('/kategori',kategoriRouter)
-//app.use('/user',todoRouter)
+app.use('/user',userRouter)
+app.use('/transaction',transactionRouter)
 
 // app.get('/nama/:id', (req, res) => {
 //     var nama = req.params.id

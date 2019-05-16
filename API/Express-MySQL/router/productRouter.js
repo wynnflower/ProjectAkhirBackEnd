@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const upload=require('../helpers/uploaderKat')
+const upload=require('../helpers/uploaderProduct')
 //const{todoController}=require('./../controller')
 const{getAllProduct,getViewProduct,
     getDetailProduct,getproductbySubkategori,getproductbyKategori,
@@ -12,14 +12,14 @@ const{getAllProduct,getViewProduct,
 router.get('/getproductfull',getAllProduct)
 router.get('/getproduct',getViewProduct)
 router.get('/getproductdetail/:id',getDetailProduct)
-router.get('/getproductsubkat',getproductbySubkategori)
-router.get('/getproductkat',getproductbyKategori)
+router.get('/getproductsubkat/:id',getproductbySubkategori)
+router.get('/getproductkat/:id',getproductbyKategori)
 router.get('/searchproduct',searchProduct)
 router.get('/getpromo',getPromo)
 
 //Product
-router.post('/addproduct',addProduct)
-router.put('/editproduct/:id',editProduct)
+router.post('/addproduct',upload.single('imageprd'),addProduct)
+router.put('/editproduct/:id',upload.single('imageprd'),editProduct)
 router.delete('/delproduct/:id',deleteProduct)
 
 

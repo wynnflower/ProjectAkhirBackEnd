@@ -1,8 +1,9 @@
 const db=require('../database')
+var fs = require('fs');
 
 module.exports={
     getAllProduct:(req,res)=>{
-        var sql = `select product.id,nama,harga,kategori,namasubkat,diskon,product.image,deskripsi from product
+        var sql = `select product.id,nama,harga,kategori,idsubkat,namasubkat,diskon,product.image,deskripsi,kategori.id as idkat from product
         join subkategori on idsubkat = subkategori.id
         join kategori on idkat=kategori.id;`
         db.query(sql, (err, result) => {
@@ -40,22 +41,22 @@ module.exports={
         })
     },
     getproductbySubkategori:(req,res)=>{
-        var subkat=req.query.namasubkat
+        var subkat=req.params.id
         console.log(subkat)
         var sql=`select product.id,nama,harga,kategori,namasubkat,diskon,product.image,deskripsi from product
         join subkategori on idsubkat = subkategori.id
-        join kategori on idkat=kategori.id where namasubkat='${subkat}';`
+        join kategori on idkat=kategori.id where subkategori.id='${subkat}';`
         db.query(sql,(err,result)=>{
             if(err) throw (err)
             res.send(result)
         })
     },
     getproductbyKategori:(req,res)=>{
-        var kat=req.query.kategori
+        var kat=req.params.id
         //console.log(subkat)
         var sql=`select product.id,nama,harga,kategori,namasubkat,diskon,product.image,deskripsi from product
         join subkategori on idsubkat = subkategori.id
-        join kategori on idkat=kategori.id where kategori='${kat}';`
+        join kategori on idkat=kategori.id where kategori.id='${kat}';`
         db.query(sql,(err,result)=>{
             if(err) throw (err)
             res.send(result)
@@ -82,9 +83,11 @@ module.exports={
         })
     },
     addProduct:(req,res)=>{
+        console.log(req.validation)
         if(req.validation) throw req.validation
-            if(req.file.size>600000) throw {error:true,msg:'Image too large'}
-             var newData=JSON.parse(req.body.data) // id kategori dan 
+            console.log(req.file)
+            if(req.file.size>6000000) throw {error:true,msg:'Image too large'}
+             var newData=JSON.parse(req.body.data)
             newData.image=req.file.destination.split('/')[1]+'/'+req.file.destination.split('/')[2]+'/'+req.file.filename
             console.log(newData)
             var sql=`insert into product set ?`
@@ -138,18 +141,48 @@ module.exports={
         })
     },
     deleteProduct:(req,res)=>{
-        var id=req.params.id
-        var path=req.body.image
+        // var id=req.params.id
+        // var path=req.body.image
 
-        var sql=`delete from product where id=${id};`
-        db.query(sql,(err,result)=>{
-            if(err) throw (err)
-            fs.unlink(path,(err,data)=>console.log('Delete Image Sukses'))
-            var sql2 = `select * from product;`
-            db.query(sql2, (err, result2) => {
-                if (err) throw (err)
-                res.send(result2)
-            })
+        // var sql=`delete from product where id=${id};`
+        // db.query(sql,(err,result)=>{
+        //     if(err) throw (err)
+        //     fs.unlink(path,(err,data)=>console.log('Delete Image Sukses'))
+        //     var sql2 = `select * from product;`
+        //     db.query(sql2, (err, result2) => {
+        //         if (err) throw (err)
+        //         res.send(result2)
+        //     })
+        // })
+        var id=req.params.id
+        var sql0= `select * from product where id=${id}`
+        db.query(sql0,(err,result0)=>{
+            try{
+                if(err) throw err.message
+                var path=result0[0].image
+                console.log(path)
+                
+                var sql = `delete from product where id=${id}`
+                db.query(sql, (err, result) => {
+                    try {
+                        if (err) throw err.message
+                        if(req.file){
+                            fs.unlink(path,(err,data2)=>console.log('Menghapus Image Lama Sukses')) 
+                        }
+                        var sql2 = `select * from product;`
+                        db.query(sql2, (err, result2) => {
+                            if (err) throw (err)
+                            res.send("Update Data Sukses")
+                        })
+                    } catch (err) {
+                        res.send(err)
+                    }
+                })
+                
+
+            } catch (err) {
+                res.send(err.message)
+            }
         })
     }
 

@@ -1,11 +1,16 @@
 const router = require('express').Router()
 //const{todoController}=require('./../controller')
-const{getAllUsers,getUserByUsername,getUserById,addUser}=require('./../controller').userController // mengacu pada index.js
+const{getAllUsers,getUserByUsername,getUserById,register,verify,login,keepLogin,loginCart,keepLoginCart}=require('./../controller').userController // mengacu pada index.js
 
 //router.post('/addTodo',todoController.addTodo)
 router.get('/alluser',getAllUsers)
 router.get('/getuserbyname',getUserByUsername)
 router.get('/getuserbyid/:id',getUserById)
-router.post('/addUser',addUser)
+router.post('/register',register)
+router.get('/login',login)
+router.get('/logincart',loginCart)
+router.get('/keeplogin',keepLogin)
+router.get('/keeplogincart',keepLoginCart)
+router.get('/verify',verify)
 
 module.exports=router

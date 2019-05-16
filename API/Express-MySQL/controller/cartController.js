@@ -2,7 +2,7 @@ const db=require('../database')
 
 module.exports={
     getAllCart:(req,res)=>{
-        var sql=`select cart.id,product.id,nama,harga,kategori,diskon,product.image,(harga-(harga*diskon/100)) as harga,  qty ,(harga-(harga*diskon/100))*qty as subtotal from product
+        var sql=`select cart.id,product.id as idproduk,nama,harga,kategori,diskon,product.image,(harga-(harga*diskon/100)) as harga,  qty ,(harga-(harga*diskon/100))*qty as subtotal from product
         join subkategori on idsubkat = subkategori.id
         join kategori on idkat=kategori.id
         join cart on product.id = cart.idproduk;`
@@ -13,13 +13,16 @@ module.exports={
     },
     getCartByUser:(req,res)=>{
         var user=req.query.username
-        var sql=`select cart.id,product.id,nama,harga,kategori,diskon,product.image,(harga-(harga*diskon/100)) as harga,  qty ,(harga-(harga*diskon/100))*qty as subtotal from product
+        var sql=`select cart.username,cart.id,product.id as idproduk,nama,harga,kategori,diskon,product.image,(harga-(harga*diskon/100)) as hargadiskon,  qty ,(harga-(harga*diskon/100))*qty as subtotal from product
         join subkategori on idsubkat = subkategori.id
         join kategori on idkat=kategori.id
-        join cart on product.id = cart.idproduk where username='${user}';`
+        join cart on product.id = cart.idproduk where cart.username='${user}';`
         db.query(sql,(err,result)=>{
             if(err) throw (err)
             res.send(result)
+            for(i=0;i<result.length;i++){
+                console.log(result[i].nama)
+            }
         })
     },
     getCartDetail:(req,res)=>{
@@ -31,6 +34,58 @@ module.exports={
         db.query(sql,(err,result)=>{
             if(err) throw (err)
             res.send(result)
+        })
+    },
+    addtoCart:(req,res)=>{
+        var data=req.body
+        var sql=`insert into cart set ?`
+        db.query(sql,data,(err,result)=>{
+            if(err) throw (err)
+            //res.redirect('getusercart?username='+data.username)
+            var user=req.body.username
+            var sql=`select cart.username,cart.id,product.id as idproduk,nama,harga,kategori,diskon,product.image,(harga-(harga*diskon/100)) as hargadiskon,  qty ,(harga-(harga*diskon/100))*qty as subtotal from product
+            join subkategori on idsubkat = subkategori.id
+            join kategori on idkat=kategori.id
+            join cart on product.id = cart.idproduk where cart.username='${user}';`
+            db.query(sql,(err,result)=>{
+                if(err) throw (err)
+                res.send(result)
+            })
+        })
+    },
+    editCart:(req,res)=>{
+        var data=req.body
+        var id=req.params.id
+        var sql=`update cart set ? where cart.id=${id}`
+        db.query(sql,data,(err,result)=>{
+            if(err) throw (err)
+            //res.redirect('../getusercart?username='+data.username)
+            var user=req.body.username
+            var sql=`select cart.username,cart.id,product.id as idproduk,nama,harga,kategori,diskon,product.image,(harga-(harga*diskon/100)) as hargadiskon,  qty ,(harga-(harga*diskon/100))*qty as subtotal from product
+            join subkategori on idsubkat = subkategori.id
+            join kategori on idkat=kategori.id
+            join cart on product.id = cart.idproduk where cart.username='${user}';`
+            db.query(sql,(err,result)=>{
+                if(err) throw (err)
+                res.send(result)
+            })
+        })
+    },
+    delCart:(req,res)=>{
+        var id=req.query.id
+        var user=req.query.username
+        var sql=`delete from cart where cart.id=${id}`
+        db.query(sql,(err,result)=>{
+            if(err) throw (err)
+            //res.redirect('getusercart?username='+username)
+            var sql=`select cart.username,cart.id,product.id as idproduk,nama,harga,kategori,diskon,product.image,(harga-(harga*diskon/100)) as hargadiskon,  qty ,(harga-(harga*diskon/100))*qty as subtotal from product
+            join subkategori on idsubkat = subkategori.id
+            join kategori on idkat=kategori.id
+            join cart on product.id = cart.idproduk where cart.username='${user}';`
+            db.query(sql,(err,result)=>{
+                if(err) throw (err)
+                res.send(result)
+            })
         })
     }
 }

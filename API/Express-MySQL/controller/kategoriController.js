@@ -10,7 +10,7 @@ module.exports={
         })
     },
     getAllSubkategori:(req,res)=>{
-        var sql=`select subkategori.id,kategori,namasubkat as subkategori from kategori
+        var sql=`select subkategori.id,kategori,namasubkat as subkategori, subkategori.image from kategori
         join subkategori on kategori.id = idkat;`
         db.query(sql,(err,result)=>{
             if(err) throw (err)
@@ -19,16 +19,35 @@ module.exports={
     },
     getSubkatByKategori:(req,res)=>{
         var idkat=req.params.id
-        var sql=`select subkategori.id, kategori.kategori,namasubkat as subkategori from subkategori
+        var sql=`select subkategori.id, kategori.kategori,namasubkat as subkategori,subkategori.image from subkategori
         join kategori on idkat = kategori.id where kategori.id=${idkat};`
         db.query(sql,(err,result)=>{
             if(err) throw (err)
             res.send(result)
         })
     },
+    getSubkatByIdSubkat:(req,res)=>{
+        var idsubkat=req.params.id
+        var sql=`select subkategori.id, kategori.kategori as kategori,namasubkat as subkategori from subkategori
+        join kategori on idkat = kategori.id where subkategori.id=${idsubkat};`
+        db.query(sql,(err,result)=>{
+            if(err) throw (err)
+            res.send(result)
+        })
+    },
+    getKatByIdKat:(req,res)=>{
+        var idkat=req.params.id
+        var sql=`select id,kategori from kategori where id=${idkat}`
+        db.query(sql,(err,result)=>{
+            if(err) throw (err)
+            res.send(result)
+        })
+    },
     addKategori:(req,res)=>{
+        console.log(req.validation)
         if(req.validation) throw req.validation
-            if(req.file.size>600000) throw {error:true,msg:'Image too large'}
+        console.log(req.file)
+            if(req.file.size>6000000) throw {error:true,msg:'Image too large'}
              var newData=JSON.parse(req.body.data) // nama kategori
             newData.image=req.file.destination.split('/')[1]+'/'+req.file.destination.split('/')[2]+'/'+req.file.filename
             console.log(newData)
@@ -105,7 +124,7 @@ module.exports={
     },
     addSubkat:(req,res)=>{
         if(req.validation) throw req.validation
-            if(req.file.size>600000) throw {error:true,msg:'Image too large'}
+            if(req.file.size>6000000) throw {error:true,msg:'Image too large'}
              var newData=JSON.parse(req.body.data) // id kategori dan 
             newData.image=req.file.destination.split('/')[1]+'/'+req.file.destination.split('/')[2]+'/'+req.file.filename
             console.log(newData)
@@ -120,6 +139,7 @@ module.exports={
         })
     },
     editSubkat:(req,res)=>{
+        console.log('Edit Subkategori')
         var id=req.params.id
 
         var sql0= `select * from subkategori where id=${id}`
@@ -140,7 +160,7 @@ module.exports={
                 db.query(sql, newData, (err, result) => {
                     try {
                         if (err) throw err.message
-                        if(req.file){
+                        if(path){
                             fs.unlink(path,(err,data2)=>console.log('Menghapus Image Lama Sukses')) 
                         }
                         var sql2 = `select * from subkategori;`
