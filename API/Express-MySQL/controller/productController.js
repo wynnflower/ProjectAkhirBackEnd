@@ -67,7 +67,7 @@ module.exports={
         console.log(search)
         var sql=`select product.id,nama,harga,kategori,namasubkat,diskon,product.image,deskripsi from product
         join subkategori on idsubkat = subkategori.id
-        join kategori on idkat=kategori.id where nama like '%${search}%';`
+        join kategori on idkat=kategori.id where nama like '%${search}%' or kategori like '%${search}%' or namasubkat like '%${search}%';`
         db.query(sql,(err,result)=>{
             if(err) throw (err)
             res.send(result)
